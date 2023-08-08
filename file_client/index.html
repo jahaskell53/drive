@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload</title>
+</head>
+<body>
+  <input type="file" id="fileInput" />
+  <button onclick="upload()">Upload</button>
+  <script>var exports = {};</script>
+
+  <script src="./file_client.js" type="module"></script>
+  <script>
+    function upload() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const fileContent = e.target.result;
+          const fileName = file.name;
+
+          // Call the uploadFile function from your JavaScript client
+          uploadFile(fileName, fileContent);
+        };
+
+        reader.readAsArrayBuffer(file);
+      } else {
+        console.error('No file selected');
+      }
+    }
+  </script>
+</body>
+</html>
