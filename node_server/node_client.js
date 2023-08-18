@@ -1,6 +1,6 @@
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
-const PROTO_PATH = "../file_server/file_service.proto";
+const PROTO_PATH = "./file_service.proto";
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -9,13 +9,14 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-
 const fileServiceProto = grpc.loadPackageDefinition(packageDefinition).files;
-
 const client = new fileServiceProto.FileService(
   "localhost:5001",
   grpc.credentials.createInsecure()
 );
+
+// TODO: add service
+// client.addService(fileServiceProto.FileService.service, {});
 
 const str = "hello";
 const encoder = new TextEncoder();
@@ -36,24 +37,41 @@ async function uploadFile(fileRequest) {
 
 async function downloadFile(downloadRequest) {
   return new Promise((resolve, reject) => {
-    client.DownloadFile(downloadRequest, (error, response) => {
-      if (error) {
-        reject(error);
-      } else {
-        console.log("Response:", response);
-        resolve(response);
-      }
+    const call = client.DownloadFile(downloadRequest);
+    let fileContent = [];
+
+    call.on("data", (chunk) => {
+      console.log("Received file data chunk");
+      fileContent.push(Buffer.from(chunk.chunk_data));
+    });
+
+
+    call.on("end", () => {
+      console.log("File downloaded successfully")
+      resolve(Buffer.concat(fileContent));
+    });
+
+    call.on("error", (error) => {
+      reject(error);
     });
   });
 }
+const uploadResponse = await uploadFile(fileRequest);
+console.log("Response:", uploadResponse);
+const downloadRequest = { file_id: uploadResponse.file_id };
+console.log("Attempting to download file with id ", uploadResponse.file_id);
+const downloadResponse = await downloadFile(downloadRequest);
+console.log("Download Response (Binary):", downloadResponse.toString('binary'));
+
+console.log("Download Response Length:", downloadResponse.length);
+console.log("Download Response Content:", downloadResponse.toString()); // Print the buffer content as a string
+
+for (let i = 0; i < downloadResponse.length; i++) {
+  console.log(`Byte ${i}:`, downloadResponse[i]);
+}
 
 
-    const uploadResponse = await uploadFile(fileRequest);
-    console.log("Response:", uploadResponse);
-    const downloadRequest = { file_id: uploadResponse.file_id };
-    console.log("Attempting to download file with id ", uploadResponse.file_id);
-    const downloadResponse = await downloadFile(downloadRequest);
-    const decoder = new TextDecoder();
-    const downloadedStr = decoder.decode(downloadResponse.file_content);
-    console.log("Download Response:", downloadedStr);
-    console.log("hi");
+const decoder = new TextDecoder();
+const downloadedStr = decoder.decode(downloadResponse.file_content); // Decode the file content
+console.log("Download Response:", downloadedStr);
+console.log("Buffer", Buffer.from(downloadResponse).toString()); // Print the raw buffer

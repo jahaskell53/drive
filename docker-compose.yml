@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  file_server:
+    build:
+      context: ./file_server
+    ports:
+      - "5001:50051"
+    # networks:
+    #   - shared_network
+    expose:
+      - 5001
+  node_server:
+    build:
+      context: ./node_server
+    depends_on:
+      - file_server
+    # networks:
+    #   - shared_network
+# networks:
+#   shared_network:
+#       driver: bridge

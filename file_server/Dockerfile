@@ -1,3 +1,6 @@
+# TO RUN: 
+# docker build -t file_server . && docker run -it -p 5001:50051 file_server
+
 # Use grpc/cxx base image
 FROM grpc/cxx
 
@@ -26,6 +29,3 @@ RUN g++ -std=c++11 -I/usr/local/include -pthread file_server.cpp file_service.pb
 # RUN /app/file_server 
 
 EXPOSE 50051
-
-# TO RUN: 
-# docker build -t grpc_test_image . && docker run -it -p 5001:50051 grpc_test_image
