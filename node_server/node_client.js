@@ -3,6 +3,15 @@ import protoLoader from "@grpc/proto-loader";
 const PROTO_PATH = "./file_service.proto";
 import fs from "fs";
 
+// import .env variables from parent directory
+import dotenv from "dotenv";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, '..', '.env') });
+
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
@@ -11,10 +20,14 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 const fileServiceProto = grpc.loadPackageDefinition(packageDefinition).files;
-const client = new fileServiceProto.FileService(
-  "localhost:5001",
-  grpc.credentials.createInsecure()
+const FILE_SERVER_PORT_NUMBER = process.env.FILE_SERVER_PORT_NUMBER; // get port number from .env file
+if (!FILE_SERVER_PORT_NUMBER) {
+  throw new Error("FILE_SERVER_PORT_NUMBER not set");
+}
+const client = new fileServiceProto.FileService( `localhost:${FILE_SERVER_PORT_NUMBER}`,
+grpc.credentials.createInsecure()
 );
+
 
 // upload all files from uploads folder
 const files = fs.readdirSync("./uploads");
