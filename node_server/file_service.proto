@@ -5,6 +5,7 @@ package files;
 service FileService {
   rpc UploadFile(UploadFileRequest) returns (FileResponse);
   rpc DownloadFile(DownloadFileRequest) returns (stream FileChunk);
+  rpc RemoveFile(DownloadFileRequest) returns (FileResponse);
 }
 
 message UploadFileRequest {

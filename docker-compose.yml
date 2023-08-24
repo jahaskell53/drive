@@ -1,3 +1,4 @@
+# NETWORK STUFF DOES NOT WORK
 version: '3.8'
 services:
   file_server:

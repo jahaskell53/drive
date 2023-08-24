@@ -29,3 +29,5 @@ RUN g++ -std=c++11 -I/usr/local/include -pthread file_server.cpp file_service.pb
 # RUN /app/file_server 
 
 EXPOSE 50051
+
+CMD ["/app/file_server"]

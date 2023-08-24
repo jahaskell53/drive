@@ -30,8 +30,19 @@ class FileServiceImpl final : public FileService::Service
       std::cout << "Error creating 'uploads' folder." << std::endl;
       return Status(grpc::StatusCode::INTERNAL, "Error creating 'uploads' folder.");
     }
+    // if file name ends with an extension, extract extension
+    std::string file_ext = "";
+    request->file_name();
+    for (int i = request->file_name().length() - 1; i >= 0; i--)
+    {
+      if (request->file_name()[i] == '.')
+      {
+        file_ext = request->file_name().substr(i);
+        break;
+      }
+    }
     // Save the uploaded file to a specific location and generate a file ID.
-    std::string file_id = "FILE-" + std::to_string(std::rand() % 1000);
+    std::string file_id = "FILE-" + std::to_string(std::rand() % 10000000000000) + file_ext;
     std::ofstream file_stream("uploads/" + file_id);
     file_stream.write(request->file_content().data(), request->file_content().size());
     file_stream.close();
@@ -64,6 +75,25 @@ class FileServiceImpl final : public FileService::Service
 
     std::cout << "File with file id " << request->file_id() << " downloaded successfully." << std::endl;
 
+    return Status::OK;
+  }
+
+  // TODO: change FILE_ID to FILE_NAME
+  // TODO: remove std:: and replace with using namespace std;
+
+  // remove file
+  Status RemoveFile(ServerContext *context, const DownloadFileRequest *request,
+                    FileResponse *reply) override
+  {
+    std::string file_id = request->file_id();
+    std::string file_path = "uploads/" + file_id;
+    if (remove(file_path.c_str()) != 0)
+    {
+      std::cout << "Error deleting file." << std::endl;
+      return Status(grpc::StatusCode::INTERNAL, "Error deleting file.");
+    }
+    std::cout << "File with file id " << file_id << " deleted successfully." << std::endl;
+    reply->set_message("File deleted successfully.");
     return Status::OK;
   }
 };
