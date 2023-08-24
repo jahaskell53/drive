@@ -14,11 +14,11 @@ message UploadFileRequest {
 }
 
 message DownloadFileRequest {
-  string file_id = 1;
+  string file_name = 1;
 }
 
 message FileResponse {
-  string file_id = 1;
+  string file_name = 1;
   string message = 2;
 }
 

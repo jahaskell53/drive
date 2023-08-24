@@ -16,51 +16,44 @@ const client = new fileServiceProto.FileService(
   grpc.credentials.createInsecure()
 );
 
-// TODO: add service
-// client.addService(fileServiceProto.FileService.service, {});
-
-// const str = "what are you doing enock";
-// const encoder = new TextEncoder();
-// const bytes = encoder.encode(str);
-
 // upload all files from uploads folder
 const files = fs.readdirSync("./uploads");
 console.log("Files:", files);
 for (let i = 0; i < files.length; i++) {
-  const file = files[i];
-  const fileContent = fs.readFileSync(`./uploads/${file}`);
+  const fileName = files[i];
+  const fileContent = fs.readFileSync(`./uploads/${fileName}`);
   const fileRequest = {
-    file_name: file,
+    file_name: fileName,
     file_content: fileContent,
   };
-  console.log("Uploading file:", file);
+  console.log("Uploading file:", fileName);
   const uploadResponse = await uploadFile(fileRequest);
   console.log("Response:", uploadResponse);
-  const downloadRequest = { file_id: uploadResponse.file_id };
-  console.log("Attempting to download file with id ", uploadResponse.file_id);
+  const downloadRequest = { file_name: uploadResponse.file_name };
+  console.log("Attempting to download file with id ", uploadResponse.file_name);
   const downloadResponse = await downloadFile(downloadRequest);
-  console.log(
-    "Download Response (Binary):",
-    downloadResponse.toString("binary")
-  );
+  // console.log(
+  //   "Download Response (Binary):",
+  //   downloadResponse.toString("binary")
+  // );
 
-  console.log("Download Response Length:", downloadResponse.length);
-  console.log("Download Response Content:", downloadResponse.toString()); // Print the buffer content as a string
+  // console.log("Download Response Length:", downloadResponse.length);
+  // console.log("Download Response Content:", downloadResponse.toString()); // Print the buffer content as a string
 
-  for (let i = 0; i < downloadResponse.length; i++) {
-    console.log(`Byte ${i}:`, downloadResponse[i]);
-  }
+  // for (let i = 0; i < downloadResponse.length; i++) {
+  //   console.log(`Byte ${i}:`, downloadResponse[i]);
+  // }
 
   const decoder = new TextDecoder();
   const downloadedStr = decoder.decode(downloadResponse.file_content); // Decode the file content
 
-  console.log("Buffer: ", Buffer.from(downloadResponse).toString()); // Print the raw buffer
+  // console.log("Buffer: ", Buffer.from(downloadResponse).toString()); // Print the raw buffer
 
   // also download the file to a folder for downloads on client side
-  console.log("Download Response:", downloadedStr);
-  console.log("download: ", downloadedStr);
+  // console.log("Download Response:", downloadedStr);
+  // console.log("download: ", downloadedStr);
   fs.writeFileSync(
-    `./downloads/${uploadResponse.file_id}`,
+    `./downloads/${uploadResponse.file_name}`,
     Buffer.from(downloadResponse)
   );
 }
@@ -72,7 +65,7 @@ for (let i = 0; i < files.length; i++) {
 }
 
 // // remove some files
-removeFile({ file_id: "FILE-1804289383.png" });
+// removeFile({ file_name: "FILE-1804289383.png" });
 
 async function uploadFile(fileRequest) {
   return new Promise((resolve, reject) => {
