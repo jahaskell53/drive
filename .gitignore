@@ -1,0 +1,5 @@
+node_server/uploads/*
+node_server/downloads/*
+
+# cmd to remove files already tracked by git
+git rm -r --cached .
