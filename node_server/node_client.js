@@ -8,9 +8,9 @@ import dotenv from "dotenv";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: join(__dirname, '..', '.env') });
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+// dotenv.config({ path: join(__dirname, '..', '.env') });
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -20,10 +20,10 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 const fileServiceProto = grpc.loadPackageDefinition(packageDefinition).files;
-const FILE_SERVER_PORT_NUMBER = process.env.FILE_SERVER_PORT_NUMBER; // get port number from .env file
-if (!FILE_SERVER_PORT_NUMBER) {
-  throw new Error("FILE_SERVER_PORT_NUMBER not set");
-}
+const FILE_SERVER_PORT_NUMBER = 5001; // get port number from .env file
+// if (!FILE_SERVER_PORT_NUMBER) {
+//   throw new Error("FILE_SERVER_PORT_NUMBER not set");
+// }
 const client = new fileServiceProto.FileService( `localhost:${FILE_SERVER_PORT_NUMBER}`,
 grpc.credentials.createInsecure()
 );
