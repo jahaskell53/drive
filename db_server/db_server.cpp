@@ -2,7 +2,8 @@
 #include <grpc++/grpc++.h>
 #include <sqlite3.h>
 
-#include "files.grpc.pb.h" // Generated from your .proto file
+#include "files.grpc.pb.h" // Generated from .proto file
+
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -39,7 +40,7 @@ public:
         sqlite3_bind_text(stmt, 3, request->owner().c_str(), -1, SQLITE_STATIC);
         sqlite3_step(stmt);
         sqlite3_finalize(stmt);
-
+        std::cout << "File info uploaded successfully." << std::endl;
         response->set_file_name(request->file_name());
         response->set_message("File info uploaded successfully.");
         return Status::OK;

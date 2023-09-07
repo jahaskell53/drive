@@ -5,11 +5,20 @@
 #include <grpc++/grpc++.h>
 #include "file_service.grpc.pb.h"
 #include <sys/stat.h>
+#include "files.grpc.pb.h"
 
+using files::DbService; // Assume the DB service's name
+// using files::DownloadFileInfo;
 using files::DownloadFileRequest;
 using files::FileChunk;
 using files::FileResponse;
 using files::FileService;
+using files::DbFileInfo;
+using files::DbFileInfoResponse;
+
+
+// using files::RemoveFileInfoRequest;
+// using files::UploadFileInfoRequest;
 using files::UploadFileRequest;
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -17,10 +26,19 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerWriter;
 using grpc::Status;
+using grpc::ClientContext;
 using namespace std;
 
 class FileServiceImpl final : public FileService::Service
 {
+
+  // Assuming a DbService client is part of the FileServiceImpl
+  unique_ptr<DbService::Stub> db_stub_;
+
+public:
+  FileServiceImpl() : db_stub_(DbService::NewStub(
+                          grpc::CreateChannel("localhost:5002", grpc::InsecureChannelCredentials()))) {}
+
   Status UploadFile(ServerContext *context, const UploadFileRequest *request,
                     FileResponse *reply) override
   {
@@ -50,6 +68,32 @@ class FileServiceImpl final : public FileService::Service
     cout << "File with file id " << file_name << " uploaded successfully." << endl;
     reply->set_file_name(file_name);
     reply->set_message("File uploaded successfully.");
+
+    // Log to DB
+    DbFileInfo db_file_info;
+    DbFileInfoResponse db_file_info_response;
+    ClientContext db_context;
+
+    // Populate the DbFileInfo message
+    db_file_info.set_file_name(file_name);
+    db_file_info.set_file_size(request->file_content().size()); // Assuming this is the file size
+    db_file_info.set_owner("some_owner");                       // Replace with the actual owner if you have that information
+
+    // Make the gRPC call to the DbService
+    Status db_status = db_stub_->UploadFileInfo(&db_context, db_file_info, &db_file_info_response);
+
+    // Check the status of the gRPC call
+    if (db_status.ok())
+    {
+      cout << "Uploaded file info to DB: " << db_file_info_response.file_name() << endl;
+      cout << "DB message: " << db_file_info_response.message() << endl;
+    }
+    else
+    {
+      cout << "Failed to upload file info to DB: " << db_status.error_message() << endl;
+      // Handle error accordingly, perhaps by modifying the 'reply' object or returning an error Status.
+    }
+
     return Status::OK;
   }
 

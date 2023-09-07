@@ -1,5 +1,5 @@
 # TO RUN: 
-# docker build -t file_server . && docker run -it -p EXTERNAL_PORT_NUMBER:50051 file_server
+# docker build -t file_server . && docker run -it -p 5001:50051 file_server
 
 # Use grpc/cxx base image
 FROM grpc/cxx
@@ -24,7 +24,10 @@ RUN protoc -I=/app --cpp_out=/app /app/file_service.proto
 # Run protoc command to generate grpc code
 RUN protoc -I /app --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` file_service.proto
 
-RUN g++ -std=c++11 -I/usr/local/include -pthread file_server.cpp file_service.pb.cc file_service.grpc.pb.cc -L/usr/local/lib `pkg-config --libs grpc++ grpc` -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed -lprotobuf -ldl -o file_server
+RUN protoc --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` files.proto 
+RUN protoc --cpp_out=. files.proto
+
+RUN g++ -std=c++11 -I/usr/local/include -pthread file_server.cpp file_service.pb.cc file_service.grpc.pb.cc files.pb.cc files.grpc.pb.cc -L/usr/local/lib `pkg-config --libs grpc++ grpc` -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed -lprotobuf -ldl -o file_server
 
 EXPOSE 50051
 
