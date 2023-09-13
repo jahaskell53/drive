@@ -37,7 +37,7 @@ class FileServiceImpl final : public FileService::Service
 
 public:
   FileServiceImpl() : db_stub_(DbService::NewStub(
-                          grpc::CreateChannel("localhost:5002", grpc::InsecureChannelCredentials()))) {}
+                          grpc::CreateChannel("db_server:50051", grpc::InsecureChannelCredentials()))) {}
 
   Status UploadFile(ServerContext *context, const UploadFileRequest *request,
                     FileResponse *reply) override

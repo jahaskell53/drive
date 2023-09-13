@@ -1,5 +1,5 @@
 FROM grpc/cxx
-# docker build -t db_server . && docker run -it -p 5001:50051 db_server
+# docker build -t db_server . && docker run -it -p 5002:50051 db_server
 # Use grpc/cxx base image
 
 # Set the working directory to /app
