@@ -1,4 +1,4 @@
-FROM grpc/cxx
+FROM grpc/grpc/java-example-hostname
 # docker build -t db_server . && docker run -it -p 5002:50051 db_server
 # Use grpc/cxx base image
 
@@ -17,10 +17,11 @@ RUN apt-get update
 
 RUN apt-get install protobuf-compiler -y
 RUN apt-get install libsqlite3-dev -y
-RUN protoc --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` files.proto 
+RUN protoc --java_out=src/main/java/ --grpc-java_out=src/main/java/ files.proto
 RUN protoc --cpp_out=. files.proto
-RUN g++ db_server.cpp files.pb.cc files.grpc.pb.cc -o db_server `pkg-config --cflags --libs protobuf grpc++` -lsqlite3
+RUN mvn clean package
 
 # expose port 5002
+EXPOSE 50051
 
-CMD ["./db_server"]
+CMD ["java", "-jar", "target/jar-file.jar"]

@@ -31,6 +31,7 @@ public:
     }
 
     Status UploadFileInfo(ServerContext* context, const FileInfo* request, FileInfoResponse* response) override {
+        std::cout << "Upload File Info called" << std::endl;
         // Insert into database
         sqlite3_stmt* stmt;
         const char* insertSql = "INSERT INTO files (file_name, file_size, owner) VALUES (?, ?, ?);";
