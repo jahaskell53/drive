@@ -48,11 +48,6 @@ The `Drive` project aims to provide a basic yet robust file storage system, usin
 - Error handling for file not found, internal server errors, etc.
 
 ### Database Server (`db_server`)
-Absolutely, having a thorough README that explains each component in detail will be incredibly helpful for anyone interacting with your project. Below is the portion of the README specific to the Database Server (`db_server`) and its role in hosting metadata of files in SQLite.
-
----
-
-### Database Server (`db_server`)
 
 #### Technologies and Libraries Used
 - C++
