@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Drive` project aims to provide a basic yet robust file storage system, using gRPC for inter-service communication and built using NodeJS and C++. The project is divided into multiple servers, each running in its own Docker container.
+The `Drive` project aims to provide a basic file storage system, using gRPC for inter-service communication and built using NodeJS and C++. The project is divided into multiple servers, each running in its own Docker container.
 
 ### Components
 
