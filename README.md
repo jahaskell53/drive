@@ -123,7 +123,6 @@ This project uses a custom Docker network (`my_custom_network`) to ensure that c
 - Implement a caching layer for faster file retrievals.
 - Add database migrations and seeders for easier DB management.
   
-Feel free to contribute to this project by opening issues or submitting pull requests.
 
 ## License
 
